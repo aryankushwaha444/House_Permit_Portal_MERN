@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Permit Application</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <i class="fas fa-home"></i>
+                House Permit
+            </div>
+            <div class="nav-right" id="navRight">
+                <div class="user-info">
+                    <span id="userWelcome"></span>
+                    <button onclick="handleLogout()" class="logout-btn">Logout</button>
+                    
+                </div>
+                
+            </div>
+        </nav>
+    </header>
+
+    <main class="permit-container">
+        <div class="permit-card">
+            <h1>House Permit Application</h1>
+            <form id="permitForm" onsubmit="handlePermitSubmit(event)" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="propertyAddress">Property Address</label>
+                    <textarea id="propertyAddress" name="propertyAddress" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="propertyType">Property Type</label>
+                    <select id="propertyType" name="propertyType" required>
+                        <option value="">Select Property Type</option>
+                        <option value="residential">Residential</option>
+                        <option value="commercial">Commercial</option>
+                        <option value="mixed">Mixed Use</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="constructionType">Construction Type</label>
+                    <select id="constructionType" name="constructionType" required>
+                        <option value="">Select Construction Type</option>
+                        <option value="new">New Construction</option>
+                        <option value="renovation">Renovation</option>
+                        <option value="addition">Addition</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="plotArea">Plot Area (sq. ft)</label>
+                    <input type="number" id="plotArea" name="plotArea" required min="0">
+                </div>
+                <div class="form-group">
+                    <label for="buildingArea">Building Area (sq. ft)</label>
+                    <input type="number" id="buildingArea" name="buildingArea" required min="0">
+                </div>
+                <div class="form-group">
+                    <label for="estimatedCost">Estimated Cost (NPR)</label>
+                    <input type="number" id="estimatedCost" name="estimatedCost" required min="0">
+                </div>
+                <div class="form-group">
+                    <label for="documents">Upload Documents (Blueprint, Land Ownership, etc.)</label>
+                    <p class="file-hint">Upload any relevant documents for your application</p>
+                    <input type="file" id="documents" name="documents" multiple required>
+                </div>
+                <div id="uploadProgress" class="upload-progress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <p class="progress-text">Uploading files...</p>
+                </div>
+                <button type="submit" class="submit-btn">Submit Application</button>
+            </form>
+        </div>
+    </main>
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 House Permit System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Check authentication on page load
+        async function checkAuth() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            
+            if (!user || !user.token) {
+                window.location.href = '/login.html';
+                return;
+            }
+
+            try {
+                // Verify token with server
+                const response = await fetch('/api/auth/verify', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Authentication failed');
+                }
+
+                // Update UI with user info
+                const userWelcome = document.getElementById('userWelcome');
+                const navRight = document.getElementById('navRight');
+                navRight.innerHTML = `
+                    <div class="user-info">
+                        <span id="userWelcome">Welcome, ${user.fullName}</span>
+                        <button onclick="window.location.href='/dashboard.html'" class="status-btn">Check Status</button>
+                        <button onclick="handleLogout()" class="logout-btn">Logout</button>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Auth error:', error);
+                localStorage.removeItem('user');
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Handle logout
+        function handleLogout() {
+            localStorage.removeItem('user');
+            window.location.href = '/login.html';
+        }
+
+        async function handlePermitSubmit(event) {
+            event.preventDefault();
+            
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user || !user.token) {
+                window.location.href = '/login.html';
+                return;
+            }
+
+            const form = event.target;
+            const formData = new FormData(form);
+            const submitBtn = form.querySelector('.submit-btn');
+            const uploadProgress = document.getElementById('uploadProgress');
+            const progressFill = uploadProgress.querySelector('.progress-fill');
+            const progressText = uploadProgress.querySelector('.progress-text');
+            
+            try {
+                // Verify authentication first
+                const authResponse = await fetch('/api/auth/verify', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                });
+
+                if (!authResponse.ok) {
+                    throw new Error('Authentication failed');
+                }
+
+                // Validate form data
+                const requiredFields = ['propertyAddress', 'propertyType', 'constructionType', 'plotArea', 'buildingArea', 'estimatedCost'];
+                const missingFields = requiredFields.filter(field => !formData.get(field));
+                
+                if (missingFields.length > 0) {
+                    throw new Error(`Please fill in all required fields: ${missingFields.join(', ')}`);
+                }
+
+                // Validate file upload
+                const files = form.querySelector('#documents').files;
+                if (files.length === 0) {
+                    throw new Error('Please upload at least one document');
+                }
+
+                // Update UI
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submitting...';
+                uploadProgress.style.display = 'block';
+                progressFill.style.width = '0%';
+                progressText.textContent = 'Preparing files...';
+
+                // Append files to FormData
+                const fileList = Array.from(files);
+                fileList.forEach(file => {
+                    formData.append('documents', file);
+                });
+
+                // Simulate upload progress
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    if (progress < 90) {
+                        progress += 10;
+                        progressFill.style.width = `${progress}%`;
+                        progressText.textContent = `Uploading... ${progress}%`;
+                    }
+                }, 200);
+
+                const response = await fetch('/api/permits', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    },
+                    body: formData
+                });
+
+                clearInterval(progressInterval);
+                progressFill.style.width = '100%';
+                progressText.textContent = 'Upload complete!';
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Show success message
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'success-message';
+                    successMessage.textContent = data.message || 'Application submitted successfully!';
+                    form.insertBefore(successMessage, form.firstChild);
+
+                    // Reset form
+                    form.reset();
+                    
+                    // Redirect to dashboard after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';
+                    }, 2000);
+                } else {
+                    if (response.status === 401) {
+                        localStorage.removeItem('user');
+                        window.location.href = '/login.html';
+                        return;
+                    }
+                    throw new Error(data.error || 'Failed to submit application');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                
+                if (error.message.includes('Authentication failed')) {
+                    localStorage.removeItem('user');
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                // Show error message
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'error-message';
+                errorMessage.textContent = error.message;
+                form.insertBefore(errorMessage, form.firstChild);
+
+                // Remove error message after 5 seconds
+                setTimeout(() => {
+                    errorMessage.remove();
+                }, 5000);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Application';
+                uploadProgress.style.display = 'none';
+            }
+        }
+
+        // Check auth when page loads
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html>

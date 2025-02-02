@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Permit Application System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <i class="fas fa-home"></i>
+                House Permit
+            </div>
+            <div class="nav-right" id="navRight">
+                <button onclick="window.location.href='/login.html'" class="login-btn">Login</button>
+                <button onclick="window.location.href='/register.html'" class="register-btn">Register</button>  
+            </div>
+        </nav>
+    </header>
+
+    <main class="home-container">
+        <div class="hero-section">
+            <h1>Welcome to House Permit Application System</h1>
+            <p>Streamline your house permit application process with our easy-to-use platform</p>
+            <button onclick="handleGetStarted()" class="cta-btn">Get Started</button>
+        </div>
+
+        <div class="features-section">
+            <h2>Our Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>Easy Application</h3>
+                    <p>Submit your permit applications online with a simple form</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-clock"></i>
+                    <h3>Track Status</h3>
+                    <p>Monitor your application status in real-time</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-upload"></i>
+                    <h3>Document Upload</h3>
+                    <p>Easily upload property images and documents</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-history"></i>
+                    <h3>Application History</h3>
+                    <p>View all your past and current applications</p>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 House Permit System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script>
+        // Check if user is logged in
+        function updateNavigation() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const navRight = document.getElementById('navRight');
+            
+            if (user) {
+                navRight.innerHTML = `
+                    <div class="user-info">
+                        <span class="username">Welcome, ${user.fullName}</span>
+                        <button onclick="window.location.href='/dashboard.html'" class="status-btn">Check Status</button>
+                        <button onclick="handleLogout()" class="logout-btn">Logout</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Handle Get Started button click
+        function handleGetStarted() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                window.location.href = '/permit-application.html';
+            } else {
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Logout function
+        function handleLogout() {
+            localStorage.removeItem('user');
+            window.location.reload();
+        }
+
+        // Call updateNavigation when page loads
+        document.addEventListener('DOMContentLoaded', updateNavigation);
+    </script>
+</body>
+</html>

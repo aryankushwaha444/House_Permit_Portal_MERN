@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - House Permit System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo" onclick="window.location.href='/'">
+                <i class="fas fa-home"></i>
+                House Permit
+            </div>
+            <div class="nav-right" id="navRight">
+                <div class="user-info">
+                    <span id="userWelcome"></span>
+                    <button onclick="handleLogout()" class="logout-btn">Logout</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="dashboard-container">
+        <div class="dashboard-header">
+            <h1><i class="fas fa-clipboard-list"></i> My Applications</h1>
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <i class="fas fa-file-alt"></i>
+                    <div class="stat-info">
+                        <span class="stat-value" id="totalApplications">0</span>
+                        <span class="stat-label">Total Applications</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-clock"></i>
+                    <div class="stat-info">
+                        <span class="stat-value" id="pendingApplications">0</span>
+                        <span class="stat-label">Pending Review</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="stat-info">
+                        <span class="stat-value" id="approvedApplications">0</span>
+                        <span class="stat-label">Approved</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="permit-filters">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchPermit" placeholder="Search by address or type...">
+                </div>
+                <div class="filter-group">
+                    <select id="statusFilter" onchange="filterPermits()">
+                        <option value="all">All Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Approved</option>  
+                        <option value="Rejected">Rejected</option>
+                    </select>
+                    <select id="sortFilter" onchange="filterPermits()">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="permit-cards" id="permitCards">
+                <!-- Permit cards will be dynamically added here -->
+            </div>
+
+            <div class="no-permits" id="noPermits" style="display: none;">
+                <i class="fas fa-folder-open"></i>
+                <h3>No Applications Found</h3>
+                <p>You haven't submitted any permit applications yet.</p>
+                <button onclick="window.location.href='/permit-application.html'" class="apply-btn">
+                    <i class="fas fa-plus"></i> Apply for Permit
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 House Permit System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        let permits = [];
+
+        // Check authentication on page load
+        async function checkAuth() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user || !user.token) {
+                window.location.href = '/login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/verify', {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Authentication failed');
+                }
+
+                document.getElementById('userWelcome').textContent = `Welcome, ${user.fullName}`;
+                loadPermits();
+            } catch (error) {
+                console.error('Auth error:', error);
+                localStorage.removeItem('user');
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Load user's permits
+        async function loadPermits() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                const response = await fetch('/api/permits/my-permits', {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load permits');
+                }
+
+                permits = await response.json();
+                updateDashboardStats();
+                displayPermits(permits);
+            } catch (error) {
+                console.error('Error loading permits:', error);
+                showError('Failed to load permits');
+            }
+        }
+
+        // Update dashboard statistics
+        function updateDashboardStats() {
+            const validStatuses = ['Pending', 'Approved', 'Rejected'];
+            const total = permits.length;
+            const pending = permits.filter(p => p.status === 'Pending').length;
+            const approved = permits.filter(p => p.status === 'Approved').length;
+            
+            document.getElementById('totalApplications').textContent = total;
+            document.getElementById('pendingApplications').textContent = pending;
+            document.getElementById('approvedApplications').textContent = approved;
+        }
+
+        // Get status class and icon
+        function getStatusInfo(status) {
+            const validStatuses = ['Pending', 'Approved', 'Rejected'];
+            const statusMap = {
+                'Pending': { class: 'pending', icon: 'fa-clock' },
+                'Approved': { class: 'approved', icon: 'fa-check-circle' },
+                'Rejected': { class: 'rejected', icon: 'fa-times-circle' },
+            };
+            
+            if (validStatuses.includes(status)) {
+                return {
+                    ...statusMap[status],
+                    displayText: status
+                };
+            } else {
+                return {
+                    class: 'invalid',
+                    icon: 'fa-exclamation-circle',
+                    displayText: `Error by admin: "${status}"`
+                };
+            }
+        }
+
+        // Display permits in cards
+        function displayPermits(permits) {
+            const permitCards = document.getElementById('permitCards');
+            const noPermits = document.getElementById('noPermits');
+
+            if (permits.length === 0) {
+                permitCards.style.display = 'none';
+                noPermits.style.display = 'flex';
+                return;
+            }
+
+            permitCards.style.display = 'grid';
+            noPermits.style.display = 'none';
+            permitCards.innerHTML = '';
+
+            permits.forEach(permit => {
+                const statusInfo = getStatusInfo(permit.status);
+                const card = document.createElement('div');
+                card.className = `permit-card ${statusInfo.class}`;
+                card.innerHTML = `
+                    <div class="permit-status ${statusInfo.class}">
+                        <i class="fas ${statusInfo.icon}"></i>
+                        ${statusInfo.displayText}
+                    </div>
+                    <div class="permit-content">
+                        <div class="permit-header">
+                            <h3><i class="fas fa-building"></i> ${permit.propertyType}</h3>
+                            <span class="permit-date">
+                                <i class="fas fa-calendar-alt"></i>
+                                ${new Date(permit.createdAt).toLocaleDateString()}
+                            </span>
+                        </div>
+                        <div class="permit-details">
+                            <p><i class="fas fa-map-marker-alt"></i> ${permit.propertyAddress}</p>
+                            <p><i class="fas fa-tools"></i> ${permit.constructionType}</p>
+                        </div>
+                        ${permit.comments ? `
+                            <div class="permit-comments">
+                                <i class="fas fa-comment"></i>
+                                <p>${permit.comments}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                permitCards.appendChild(card);
+            });
+        }
+
+        // Filter and search permits
+        function filterPermits() {
+            const searchTerm = document.getElementById('searchPermit').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const sortFilter = document.getElementById('sortFilter').value;
+
+            let filteredPermits = [...permits];
+
+            // Apply status filter
+            if (statusFilter !== 'all') {
+                filteredPermits = filteredPermits.filter(p => p.status === statusFilter);
+            }
+
+            // Apply search filter
+            if (searchTerm) {
+                filteredPermits = filteredPermits.filter(p => 
+                    p.propertyAddress.toLowerCase().includes(searchTerm) ||
+                    p.propertyType.toLowerCase().includes(searchTerm) ||
+                    p.constructionType.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            // Apply sort
+            filteredPermits.sort((a, b) => {
+                if (sortFilter === 'newest') {
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                } else {
+                    return new Date(a.createdAt) - new Date(b.createdAt);
+                }
+            });
+
+            displayPermits(filteredPermits);
+        }
+
+        // Add search event listener
+        document.getElementById('searchPermit').addEventListener('input', filterPermits);
+
+        function handleLogout() {
+            localStorage.removeItem('user');
+            window.location.href = '/login.html';
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html>
