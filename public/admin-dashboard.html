@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Admin Dashboard | House Permit Portal</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/css/admin.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a class="logo" href="/index.html"
+          ><i class="fas fa-home"></i> House Permit</a
+        >
+        <div class="nav-right" id="navRight"></div>
+      </nav>
+    </header>
+    <main class="home-container">
+      <section class="features-section">
+        <h1>Permit Administration</h1>
+        <p id="formMessage"></p>
+        <ul id="permitList"></ul>
+      </section>
+    </main>
+    <footer>
+      <div class="footer-content">
+        <p>&copy; 2026 House Permit System. All rights reserved.</p>
+      </div>
+    </footer>
+    <script src="/js/common/auth.js"></script>
+    <script src="/js/common/api.js"></script>
+    <script src="/js/common/ui.js"></script>
+    <script src="/js/common/siteChrome.js"></script>
+    <script src="/js/pages/admin.js"></script>
+  </body>
+</html>

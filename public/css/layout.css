@@ -1,0 +1,195 @@
+/* =========================================
+   PAGE LAYOUT
+========================================= */
+
+.app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    /* Keep page content clear of the fixed footer. */
+    padding-bottom: 40px;
+}
+
+.main-content {
+    flex: 1;
+    width: 100%;
+}
+
+.container {
+    width: min(100% - 32px, var(--container-width));
+    margin-inline: auto;
+}
+
+/* =========================================
+   HEADER
+========================================= */
+
+.site-header {
+    /* Navy treatment matches the approved navbar reference. */
+    background: linear-gradient(105deg, #1f4078 0%, #2f5798 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 3px 12px rgba(20, 47, 91, 0.22);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-inner {
+    width: min(100% - 32px, var(--container-width));
+    min-height: 72px;
+    margin-inline: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.brand-icon {
+    width: 40px;
+    height: 40px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+}
+
+.user-name {
+    color: rgba(255, 255, 255, 0.96);
+    font-size: 0.95rem;
+}
+
+.site-header .btn-outline {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.24);
+    color: #ffffff;
+}
+
+.site-header .btn-outline:hover {
+    background: rgba(255, 255, 255, 0.27);
+    border-color: rgba(255, 255, 255, 0.48);
+    color: #ffffff;
+}
+
+.avatar-trigger {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+    font-size: 1.25rem;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.avatar-trigger:hover,
+.avatar-trigger[aria-expanded="true"] {
+    background: rgba(255, 255, 255, 0.28);
+    transform: translateY(-1px);
+}
+
+.account-menu {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    z-index: 1100;
+    width: 255px;
+    overflow: hidden;
+    border: 1px solid #dbe3f0;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 14px 30px rgba(15, 35, 70, 0.2);
+}
+
+.account-details {
+    display: grid;
+    gap: 3px;
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+    color: #172033;
+}
+
+.account-details span {
+    overflow: hidden;
+    color: #64748b;
+    font-size: 0.82rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.account-logout {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 13px 16px;
+    border: 0;
+    background: #ffffff;
+    color: #243b63;
+    font-weight: 700;
+    text-align: left;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.account-logout:hover {
+    background: #d99a20;
+    color: #1e293b;
+}
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.site-footer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    height: 40px;
+    padding: 7px 0;
+    background: #23457f;
+    color: #101827;
+}
+
+.footer-inner {
+    width: min(100% - 32px, var(--container-width));
+    margin-inline: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.footer-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    opacity: 1;
+}
+
+/* Screenshot 1 uses a single copyright line in the compact footer. */
+.footer-text + .footer-text {
+    display: none;
+}

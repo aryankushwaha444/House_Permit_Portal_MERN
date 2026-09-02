@@ -1,0 +1,76 @@
+/* =========================================
+   BASE
+========================================= */
+
+:root {
+    --primary: #1e3c72;
+    --primary-dark: #162d55;
+
+    --text: #1f2937;
+    --text-muted: #6b7280;
+
+    --background: #f5f7fb;
+    --surface: #ffffff;
+    --border: #e5e7eb;
+
+    --success: #16803c;
+    --warning: #b7791f;
+    --danger: #c53030;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+
+    --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+
+    --container-width: 1200px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+
+    font-family:
+        "Inter",
+        "Segoe UI",
+        Tahoma,
+        Geneva,
+        Verdana,
+        sans-serif;
+
+    line-height: 1.6;
+
+    color: var(--text);
+    background: var(--background);
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}

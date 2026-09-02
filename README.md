@@ -31,19 +31,21 @@ You can Visit mine Website: https://www.aaryankushawaha.com.np
 ## Project Structure
 
 ```
-house-permit-system/
-├── middleware/         # Authentication and request processing middleware
-├── models/            # MongoDB schema models
-├── public/            # Static files (HTML, CSS, JS, images)
-│   ├── styles.css     # Global styles
-│   ├── index.html     # Landing page
-│   ├── login.html     # Login page
-│   ├── register.html  # Registration page
-│   └── permit-application.html  # Permit application form
-├── routes/            # API routes
-├── .env              # Environment variables
-├── server.js         # Main application file
-└── package.json      # Project dependencies
+House_Permit_Portal_MERN/
+├── config/            # MongoDB connection
+├── controllers/       # HTTP request handlers
+├── middleware/        # Authentication, admin and error middleware
+├── models/            # User and Permit schemas
+├── routes/            # API endpoint definitions
+├── services/          # Authentication and permit business logic
+├── utils/             # Token and validation helpers
+├── public/            # HTML, CSS, JavaScript and static assets
+│   ├── css/
+│   ├── js/common/
+│   ├── js/pages/
+│   └── assets/
+├── uploads/           # Runtime uploaded documents (not committed)
+└── server.js          # Application entry point
 ```
 
 ## Setup and Installation
@@ -59,7 +61,7 @@ cd house-permit-system
 npm install
 ```
 
-3. Create .env file in the root directory with the following variables:
+3. Copy `.env.example` to `.env` and set the following variables:
 ```
 MONGODB_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret_key
