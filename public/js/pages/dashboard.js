@@ -18,17 +18,12 @@ async function initializeDashboard() {
 
   try {
     await verifyAuthentication(user);
-
     setWelcomeMessage(user);
-
     await loadPermits(user);
-
     setupFilters();
   } catch (error) {
     console.error("Dashboard initialization failed:", error);
-
     clearStoredUser();
-
     window.location.href = "/login.html";
   }
 }
@@ -40,7 +35,6 @@ async function initializeDashboard() {
 async function verifyAuthentication(user) {
   const response = await fetch("/api/auth/verify", {
     method: "GET",
-
     headers: {
       Authorization: `Bearer ${user.token}`,
     },
@@ -75,6 +69,7 @@ function setWelcomeMessage(user) {
 
   const menuButton = document.getElementById("accountMenuButton");
   const menu = document.getElementById("accountMenu");
+
   const closeMenu = () => {
     menu.hidden = true;
     menuButton.setAttribute("aria-expanded", "false");
@@ -82,16 +77,25 @@ function setWelcomeMessage(user) {
 
   menuButton.addEventListener("click", (event) => {
     event.stopPropagation();
+
     const isOpen = !menu.hidden;
+
     menu.hidden = isOpen;
     menuButton.setAttribute("aria-expanded", String(!isOpen));
   });
 
-  menu.addEventListener("click", (event) => event.stopPropagation());
-  document.addEventListener("click", closeMenu);
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") closeMenu();
+  menu.addEventListener("click", (event) => {
+    event.stopPropagation();
   });
+
+  document.addEventListener("click", closeMenu);
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeMenu();
+    }
+  });
+
   document
     .getElementById("accountLogout")
     .addEventListener("click", handleLogout);
@@ -115,7 +119,6 @@ async function loadPermits(user) {
   permits = await response.json();
 
   updateStatistics();
-
   displayPermits(permits);
 }
 
@@ -135,9 +138,7 @@ function updateStatistics() {
   ).length;
 
   document.getElementById("totalApplications").textContent = total;
-
   document.getElementById("pendingApplications").textContent = pending;
-
   document.getElementById("approvedApplications").textContent = approved;
 }
 
@@ -147,7 +148,6 @@ function updateStatistics() {
 
 function displayPermits(list) {
   const container = document.getElementById("permitCards");
-
   const emptyState = document.getElementById("noPermits");
 
   container.innerHTML = "";
@@ -155,7 +155,6 @@ function displayPermits(list) {
   if (!list.length) {
     container.hidden = true;
     emptyState.hidden = false;
-
     return;
   }
 
@@ -175,77 +174,85 @@ function createPermitCard(permit) {
   const statusClass = permit.status.toLowerCase();
 
   card.innerHTML = `
+    <div class="permit-card-header">
 
-        <div class="permit-card-header">
+      <div class="permit-property">
 
-            <div class="permit-property">
-
-                <div class="property-icon">
-
-                    <i class="fa-solid fa-building"></i>
-
-                </div>
-
-                <h3>
-                    ${escapeHTML(permit.propertyType)}
-                </h3>
-
-            </div>
-
-            <span class="status-badge ${statusClass}">
-                ${escapeHTML(permit.status)}
-            </span>
-
+        <div class="property-icon">
+          <i class="fa-solid fa-building"></i>
         </div>
 
+        <h3>
+          ${escapeHTML(permit.propertyType)}
+        </h3>
 
-        <div class="permit-body">
+      </div>
 
-            <div class="permit-detail">
+      <span class="status-badge ${statusClass}">
+        ${escapeHTML(permit.status)}
+      </span>
 
-                <i class="fa-solid fa-location-dot"></i>
+    </div>
 
-                <span>
-                    ${escapeHTML(permit.propertyAddress)}
-                </span>
+    <div class="permit-body">
 
-            </div>
+      <div class="permit-detail">
 
+        <i class="fa-solid fa-location-dot"></i>
 
-            <div class="permit-detail">
+        <span>
+          ${escapeHTML(permit.propertyAddress)}
+        </span>
 
-                <i class="fa-solid fa-hammer"></i>
+      </div>
 
-                <span>
-                    ${escapeHTML(permit.constructionType)}
-                </span>
+      <div class="permit-detail">
 
-            </div>
+        <i class="fa-solid fa-hammer"></i>
 
-        </div>
+        <span>
+          ${escapeHTML(permit.constructionType)}
+        </span>
 
+      </div>
 
-        <div class="permit-card-footer">
+    </div>
 
-            <span class="permit-date">
+    <div class="permit-card-footer">
 
-                <i class="fa-regular fa-calendar"></i>
+      <span class="permit-date">
 
-                ${formatDate(permit.createdAt)}
+        <i class="fa-regular fa-calendar"></i>
 
-            </span>
+        ${formatDate(permit.createdAt)}
 
+      </span>
+
+      ${
+        permit.status === "Pending" || permit.status === "Rejected"
+          ? `
             <button
-                type="button"
-                class="btn btn-outline"
-                onclick="viewPermit('${permit._id}')"
+              type="button"
+              class="btn btn-outline"
+              onclick="editPermit('${permit._id}')"
             >
-                View Details
+              <i class="fa-solid fa-pen-to-square"></i>
+              Edit
             </button>
+          `
+          : `
+            <button
+              type="button"
+              class="btn btn-outline"
+              onclick="viewPermit('${permit._id}')"
+            >
+              View Details
+            </button>
+          `
+      }
 
-        </div>
-
-    `;
+    </div>
+  `;
 
   return card;
 }
@@ -275,7 +282,6 @@ function filterPermits() {
     .toLowerCase();
 
   const status = document.getElementById("statusFilter").value;
-
   const sort = document.getElementById("sortFilter").value;
 
   let filtered = permits.filter((permit) => {
@@ -292,7 +298,6 @@ function filterPermits() {
 
   filtered.sort((a, b) => {
     const dateA = new Date(a.createdAt);
-
     const dateB = new Date(b.createdAt);
 
     return sort === "newest" ? dateB - dateA : dateA - dateB;
@@ -325,12 +330,231 @@ function escapeHTML(value) {
    ACTIONS
 ========================================= */
 
-function viewPermit(id) {
-  window.location.href = `/permit-details.html?id=${id}`;
+async function viewPermit(id) {
+  try {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || !user.token) {
+      window.location.href = "/login.html";
+      return;
+    }
+
+    const response = await fetch(`/api/permits/${id}/edit`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
+    });
+
+    const permit = await response.json();
+
+    if (!response.ok) {
+      throw new Error(permit.error || "Failed to load permit details");
+    }
+
+    showPermitDetails(permit);
+  } catch (error) {
+    console.error("Error loading permit:", error);
+    alert(error.message);
+  }
+}
+
+function showPermitDetails(permit) {
+  // Remove existing modal if present
+  const existingModal = document.getElementById("permitDetailsModal");
+
+  if (existingModal) {
+    existingModal.remove();
+  }
+
+  const modal = document.createElement("div");
+
+  modal.id = "permitDetailsModal";
+  modal.className = "permit-modal";
+
+  modal.innerHTML = `
+    <div class="permit-modal-content">
+
+      <div class="permit-modal-header">
+        <div>
+          <h2>Permit Details</h2>
+          <span class="status-badge ${permit.status.toLowerCase()}">
+            ${permit.status}
+          </span>
+        </div>
+
+        <button
+          type="button"
+          class="permit-modal-close"
+          id="closePermitModal"
+          aria-label="Close"
+        >
+          &times;
+        </button>
+      </div>
+
+      <div class="permit-modal-body">
+
+        <div class="detail-row">
+          <span class="detail-label">Applicant Name</span>
+          <span class="detail-value">
+            ${permit.applicantName || "-"}
+          </span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Property Address</span>
+          <span class="detail-value">
+            ${permit.propertyAddress || "-"}
+          </span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Property Type</span>
+          <span class="detail-value">
+            ${permit.propertyType || "-"}
+          </span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Construction Type</span>
+          <span class="detail-value">
+            ${permit.constructionType || "-"}
+          </span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Plot Area</span>
+          <span class="detail-value">
+            ${permit.plotArea || 0} sq. ft
+          </span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Building Area</span>
+          <span class="detail-value">
+            ${permit.buildingArea || 0} sq. ft
+          </span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Estimated Cost</span>
+          <span class="detail-value">
+            NPR ${Number(permit.estimatedCost || 0).toLocaleString()}
+          </span>
+        </div>
+
+        ${
+          permit.remarks
+            ? `
+              <div class="detail-row remarks-row">
+                <span class="detail-label">Admin Remarks</span>
+                <span class="detail-value">
+                  ${permit.remarks}
+                </span>
+              </div>
+            `
+            : ""
+        }
+
+        ${
+          permit.documents && permit.documents.length
+            ? `
+              <div class="documents-section">
+                <h3>Documents</h3>
+
+               ${[
+                 ...new Map(
+                   permit.documents.map((document) => [
+                     `${document.fileName}-${document.filePath}`,
+                     document,
+                   ])
+                 ).values(),
+               ]
+                 .map(
+                   (document) => `
+                     <div class="document-item">
+                    <i class="fa-solid fa-file"></i>
+                    <span>${escapeHTML(document.fileName)}</span>
+                   <a
+                   href="${document.filePath}"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   >
+                    View
+                   </a>
+                   </div>
+                  `
+                 )
+                 .join("")}
+              </div>
+            `
+            : ""
+        }
+
+      </div>
+
+      <div class="permit-modal-footer">
+        <button
+          type="button"
+          class="btn btn-outline"
+          id="closePermitModalFooter"
+        >
+          Close
+        </button>
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // Prevent background scrolling
+  document.body.style.overflow = "hidden";
+
+  // Close button
+  document
+    .getElementById("closePermitModal")
+    .addEventListener("click", closePermitDetails);
+
+  document
+    .getElementById("closePermitModalFooter")
+    .addEventListener("click", closePermitDetails);
+
+  // Close when clicking outside popup
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      closePermitDetails();
+    }
+  });
+
+  // Close with ESC key
+  document.addEventListener("keydown", handlePermitModalEscape);
+}
+
+function closePermitDetails() {
+  const modal = document.getElementById("permitDetailsModal");
+
+  if (modal) {
+    modal.remove();
+  }
+
+  document.body.style.overflow = "";
+
+  document.removeEventListener("keydown", handlePermitModalEscape);
+}
+
+function handlePermitModalEscape(event) {
+  if (event.key === "Escape") {
+    closePermitDetails();
+  }
+}
+
+function editPermit(id) {
+  window.location.href = `/permit-application.html?id=${id}`;
 }
 
 function handleLogout() {
   localStorage.removeItem("user");
-
   window.location.href = "/login.html";
 }
