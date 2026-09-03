@@ -14,18 +14,127 @@
   <body>
     <header>
       <nav>
-        <a class="logo" href="/index.html"
-          ><i class="fas fa-home"></i> House Permit</a
-        >
+        <a class="logo" id="portalLogo" href="/index.html">
+          <i class="fas fa-home"></i> House Permit
+        </a>
         <div class="nav-right" id="navRight"></div>
       </nav>
     </header>
-    <main class="home-container">
-      <section class="features-section">
-        <h1>Permit Administration</h1>
-        <p id="formMessage"></p>
-        <ul id="permitList"></ul>
+    <main class="admin-container">
+
+      <p id="formMessage"></p>
+
+      <!-- Statistics -->
+
+      <section class="admin-stats">
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon">
+            <i class="fa-solid fa-file-lines"></i>
+          </div>
+
+          <div>
+            <span>Total Permits</span>
+            <strong id="totalPermits">0</strong>
+          </div>
+        </div>
+
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon">
+            <i class="fa-solid fa-clock"></i>
+          </div>
+
+          <div>
+            <span>Pending</span>
+            <strong id="pendingPermits">0</strong>
+          </div>
+        </div>
+
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+
+          <div>
+            <span>Approved</span>
+            <strong id="approvedPermits">0</strong>
+          </div>
+        </div>
+
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon">
+            <i class="fa-solid fa-circle-xmark"></i>
+          </div>
+
+          <div>
+            <span>Rejected</span>
+            <strong id="rejectedPermits">0</strong>
+          </div>
+        </div>
+
+        <div class="admin-stat-card">
+          <div class="admin-stat-icon">
+            <i class="fa-solid fa-users"></i>
+          </div>
+
+          <div>
+            <span>Total Users</span>
+            <strong id="totalUsers">0</strong>
+          </div>
+        </div>
       </section>
+
+      <!-- Permit Management -->
+
+      <section class="admin-panel">
+        <div class="admin-panel-header">
+          <div>
+            <h2>Permit Applications</h2>
+            <p>Review and manage submitted permits.</p>
+          </div>
+
+          <div class="admin-filters">
+            <input
+              type="search"
+              id="permitSearch"
+              placeholder="Search permits..."
+              aria-label="Search permits"
+            />
+
+            <select
+              id="permitStatusFilter"
+              aria-label="Filter permits by status"
+            >
+              <option value="all">All Status</option>
+              <option value="Pending">Pending</option>
+              <option value="Approved">Approved</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Applicant</th>
+                <th>Property Address</th>
+                <th>Property Type</th>
+                <th>Construction</th>
+                <th>Submitted</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody id="permitTableBody">
+              <tr>
+                <td colspan="7" class="empty-table">Loading permits...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
     </main>
     <footer>
       <div class="footer-content">

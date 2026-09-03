@@ -374,7 +374,7 @@ nav {
 }
 
 .logo {
-    text-decoration:none;
+  text-decoration: none;
   font-size: 1.8rem;
   font-weight: bold;
   text-transform: uppercase;
@@ -584,24 +584,21 @@ nav {
 /* Main Content */
 main {
   flex: 1;
-  padding: 2rem;
   padding-bottom: 5rem;
 }
 
 /* Hero Section */
 .hero-section {
-  height: 650px;
-  text-align: center;
-  padding: 4rem 2rem;
-  background: linear-gradient(
-      rgba(255, 255, 255, 0.3),
-      rgba(255, 255, 255, 0.9)
-    ),
-    url("https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3");
-  background-size: cover;
-  background-position: center;
-  border-radius: 40px;
+  position: relative;
+  width: 100%;
   margin-bottom: 3rem;
+  overflow: hidden;
+}
+
+.hero-section img {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 .hero-section h1 {
@@ -617,19 +614,31 @@ main {
 }
 
 .cta-btn {
+  position: absolute;
+
+  top: 10%;
+  left: 60%;
+
+  transform: translate(-50%, -50%);
+
   padding: 1rem 2.5rem;
   font-size: 1.1rem;
-  background-color: #4caf50;
+
+  background-color: #4caf60;
   color: white;
+
   border: none;
   border-radius: 5px;
+
   cursor: pointer;
   transition: all 0.3s ease;
+
+  z-index: 2;
 }
 
 .cta-btn:hover {
-  background-color: #45a049;
-  transform: translateY(-2px);
+  background-color: #4caf20;
+  transform: translate(-50%, -50%) scale(1.05);
 }
 
 /* Features Section */
@@ -699,11 +708,13 @@ footer {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
+  text-align: left;
 }
 
 .footer-content p {
   margin: 0;
   font-size: 0.9rem;
+  color: #ffffff;
 }
 
 /* Logo Styles */

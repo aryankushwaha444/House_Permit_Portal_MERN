@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>User Management | House Permit Portal</title>
+
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/css/admin.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <header>
+      <nav>
+        <a class="logo" id="portalLogo" href="/index.html">
+          <i class="fas fa-home"></i>
+          House Permit
+        </a>
+
+        <div class="nav-right" id="navRight"></div>
+      </nav>
+    </header>
+
+    <main class="admin-container">
+
+      <p id="formMessage"></p>
+
+      <section class="admin-panel">
+        <div class="admin-panel-header">
+          <div>
+            <h2>Users</h2>
+            <p>Change user password or role.</p>
+          </div>
+
+          <div class="admin-filters">
+            <input
+              type="search"
+              id="userSearch"
+              placeholder="Search users..."
+              aria-label="Search users"
+            />
+
+            <select id="userRoleFilter" aria-label="Filter users by role">
+              <option value="all">All Roles</option>
+              <option value="user">Users</option>
+              <option value="admin">Admins</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Role</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody id="userTableBody">
+              <tr>
+                <td colspan="6" class="empty-table">Loading users...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-content">
+        <p>&copy; 2026 House Permit System. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="/js/common/auth.js"></script>
+    <script src="/js/common/api.js"></script>
+    <script src="/js/common/ui.js"></script>
+    <script src="/js/common/siteChrome.js"></script>
+    <script src="/js/pages/admin.js"></script>
+  </body>
+</html>
