@@ -3,7 +3,7 @@ async function api(path, options = {}) {
   const headers = {
     ...(options.body instanceof FormData
       ? {}
-      : { "Content-Type": "application/json" }),
+      : {}),
     ...options.headers,
   };
   if (user?.token) headers.Authorization = `Bearer ${user.token}`;

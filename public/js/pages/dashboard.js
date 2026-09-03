@@ -12,7 +12,7 @@ async function initializeDashboard() {
   const user = getStoredUser();
 
   if (!user || !user.token) {
-    window.location.href = "/login.html";
+    window.location.href = "/login";
     return;
   }
 
@@ -24,7 +24,7 @@ async function initializeDashboard() {
   } catch (error) {
     console.error("Dashboard initialization failed:", error);
     clearStoredUser();
-    window.location.href = "/login.html";
+    window.location.href = "/login";
   }
 }
 
@@ -335,7 +335,7 @@ async function viewPermit(id) {
     const user = JSON.parse(localStorage.getItem("user"));
 
     if (!user || !user.token) {
-      window.location.href = "/login.html";
+      window.location.href = "/login";
       return;
     }
 
@@ -556,5 +556,5 @@ function editPermit(id) {
 
 function handleLogout() {
   localStorage.removeItem("user");
-  window.location.href = "/login.html";
+  window.location.href = "/login";
 }

@@ -15,7 +15,7 @@
       <nav>
         <div class="logo">
           <a
-            href="/index.html"
+            href="/"
             style="
               text-decoration: none;
               color: inherit;
@@ -46,7 +46,7 @@
           <button type="submit" class="submit-btn">Login</button>
         </form>
         <p class="auth-link">
-          Don't have an account? <a href="/register.html">Register here</a>
+          Don't have an account? <a href="/register">Register here</a>
         </p>
       </div>
     </main>
@@ -89,7 +89,7 @@
 
             // Redirect based on role
             if (data.user.role === "admin") {
-              window.location.href = "/admin-dashboard.html";
+              window.location.href = "/admin-dashboard";
             } else {
               window.location.href = "/dashboard/";
             }

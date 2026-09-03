@@ -13,11 +13,7 @@
   <body>
     <header>
       <nav>
-        <a
-          class="logo"
-          href="/index.html"
-          aria-label="Go to House Permit home page"
-        >
+        <a class="logo" href="/index" aria-label="Go to House Permit home page">
           <i class="fas fa-home"></i>
           House Permit
         </a>
@@ -98,8 +94,9 @@
             </p>
             <input
               type="file"
-              id="documents"
               name="documents"
+              id="documents"
+              accept=".pdf,.jpg,.jpeg,.png,.webp"
               multiple
             />
           </div>
@@ -129,18 +126,18 @@
       const urlParams = new URLSearchParams(window.location.search);
       const permitId = urlParams.get("id");
       const isEditMode = Boolean(permitId);
-    
+
       // ==============================
       // CHECK AUTHENTICATION
       // ==============================
       async function checkAuth() {
         const user = JSON.parse(localStorage.getItem("user"));
-    
+
         if (!user || !user.token) {
-          window.location.href = "/login.html";
+          window.location.href = "/login";
           return;
         }
-    
+
         try {
           const response = await fetch("/api/auth/verify", {
             method: "GET",
@@ -148,13 +145,13 @@
               Authorization: `Bearer ${user.token}`,
             },
           });
-    
+
           if (!response.ok) {
             throw new Error("Authentication failed");
           }
-    
+
           renderPortalNavigation();
-    
+
           // Load existing permit when editing
           if (isEditMode) {
             await loadPermitForEdit();
@@ -162,78 +159,77 @@
         } catch (error) {
           console.error("Auth error:", error);
           localStorage.removeItem("user");
-          window.location.href = "/login.html";
+          window.location.href = "/login";
         }
       }
-    
+
       // ==============================
       // LOAD PERMIT FOR EDITING
       // ==============================
       async function loadPermitForEdit() {
         try {
           const user = JSON.parse(localStorage.getItem("user"));
-    
+
           const response = await fetch(`/api/permits/${permitId}/edit`, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${user.token}`,
             },
           });
-    
+
           const data = await response.json();
-    
+
           if (!response.ok) {
             throw new Error(data.error || "Failed to load permit");
           }
-    
+
           console.log("Permit loaded for editing:", data);
-    
+
           // Fill form fields
           document.getElementById("propertyAddress").value =
             data.propertyAddress || "";
-    
+
           document.getElementById("propertyType").value =
             data.propertyType || "";
-    
+
           document.getElementById("constructionType").value =
             data.constructionType || "";
-    
-          document.getElementById("plotArea").value =
-            data.plotArea ?? "";
-    
+
+          document.getElementById("plotArea").value = data.plotArea ?? "";
+
           document.getElementById("buildingArea").value =
             data.buildingArea ?? "";
-    
+
           document.getElementById("estimatedCost").value =
             data.estimatedCost ?? "";
-    
+
           // Change heading
           const heading = document.querySelector("h1");
-    
+
           if (heading) {
             heading.textContent = "Edit Permit Application";
           }
-    
+
           // Change submit button
           const submitButton = document.querySelector(".submit-btn");
-    
+
           if (submitButton) {
             submitButton.innerHTML =
               '<i class="fas fa-pen-to-square"></i> Update Application';
           }
-    
+
           // Change document hint
           const fileHint = document.querySelector(".file-hint");
-    
+
           if (fileHint) {
             fileHint.textContent =
               "Upload new documents only if you want to replace the existing documents.";
           }
         } catch (error) {
           console.error("Error loading permit:", error);
-    
+
           const form = document.getElementById("permitForm");
-    
+
           if (form) {
             const errorMessage = document.createElement("div");
             errorMessage.className = "error-message";
@@ -242,38 +238,36 @@
           }
         }
       }
-    
+
       // ==============================
       // HANDLE LOGOUT
       // ==============================
       function handleLogout() {
         localStorage.removeItem("user");
-        window.location.href = "/login.html";
+        window.location.href = "/login";
       }
-    
+
       // ==============================
       // SUBMIT / UPDATE PERMIT
       // ==============================
       async function handlePermitSubmit(event) {
         event.preventDefault();
-    
+
         const user = JSON.parse(localStorage.getItem("user"));
-    
+
         if (!user || !user.token) {
-          window.location.href = "/login.html";
+          window.location.href = "/login";
           return;
         }
-    
+
         const form = event.target;
         const formData = new FormData(form);
-    
+
         const submitBtn = form.querySelector(".submit-btn");
         const uploadProgress = document.getElementById("uploadProgress");
-        const progressFill =
-          uploadProgress.querySelector(".progress-fill");
-        const progressText =
-          uploadProgress.querySelector(".progress-text");
-    
+        const progressFill = uploadProgress.querySelector(".progress-fill");
+        const progressText = uploadProgress.querySelector(".progress-text");
+
         try {
           // ==============================
           // VALIDATE FORM
@@ -286,45 +280,45 @@
             "buildingArea",
             "estimatedCost",
           ];
-    
+
           const missingFields = requiredFields.filter(
             (field) => !formData.get(field)
           );
-    
+
           if (missingFields.length > 0) {
             throw new Error(
               `Please fill in all required fields: ${missingFields.join(", ")}`
             );
           }
-    
+
           // ==============================
           // FILE VALIDATION
           // ==============================
           const files = form.querySelector("#documents").files;
-    
+
           // Only require documents for NEW applications
           if (!isEditMode && files.length === 0) {
             throw new Error("Please upload at least one document");
           }
-    
+
           // ==============================
           // UI
           // ==============================
           submitBtn.disabled = true;
-    
+
           submitBtn.innerHTML = isEditMode
             ? '<i class="fas fa-spinner fa-spin"></i> Updating...'
             : '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-    
+
           uploadProgress.style.display = "block";
           progressFill.style.width = "0%";
           progressText.textContent = "Preparing files...";
-    
+
           // ==============================
           // SIMULATE PROGRESS
           // ==============================
           let progress = 0;
-    
+
           const progressInterval = setInterval(() => {
             if (progress < 90) {
               progress += 10;
@@ -332,16 +326,14 @@
               progressText.textContent = `Uploading... ${progress}%`;
             }
           }, 200);
-    
+
           // ==============================
           // CREATE OR UPDATE
           // ==============================
-          const url = isEditMode
-            ? `/api/permits/${permitId}`
-            : "/api/permits";
-    
+          const url = isEditMode ? `/api/permits/${permitId}` : "/api/permits";
+
           const method = isEditMode ? "PUT" : "POST";
-    
+
           const response = await fetch(url, {
             method,
             headers: {
@@ -349,21 +341,21 @@
             },
             body: formData,
           });
-    
+
           clearInterval(progressInterval);
-    
+
           progressFill.style.width = "100%";
           progressText.textContent = "Upload complete!";
-    
+
           const data = await response.json();
-    
+
           if (!response.ok) {
             if (response.status === 401) {
               localStorage.removeItem("user");
-              window.location.href = "/login.html";
+              window.location.href = "/login";
               return;
             }
-    
+
             throw new Error(
               data.error ||
                 data.message ||
@@ -372,7 +364,7 @@
                   : "Failed to submit application")
             );
           }
-    
+
           // ==============================
           // SUCCESS
           // ==============================
@@ -383,42 +375,39 @@
             (isEditMode
               ? "Application updated successfully!"
               : "Application submitted successfully!");
-    
+
           form.insertBefore(successMessage, form.firstChild);
-    
+
           setTimeout(() => {
             window.location.href = "/dashboard/";
           }, 1500);
-    
         } catch (error) {
           console.error("Error:", error);
-    
+
           const errorMessage = document.createElement("div");
           errorMessage.className = "error-message";
           errorMessage.textContent = error.message;
-    
+
           form.insertBefore(errorMessage, form.firstChild);
-    
+
           setTimeout(() => {
             errorMessage.remove();
           }, 5000);
-    
         } finally {
           submitBtn.disabled = false;
-    
+
           submitBtn.innerHTML = isEditMode
             ? '<i class="fas fa-pen-to-square"></i> Update Application'
             : "Submit Application";
-    
+
           uploadProgress.style.display = "none";
         }
       }
-    
+
       // ==============================
       // PAGE LOAD
       // ==============================
       document.addEventListener("DOMContentLoaded", checkAuth);
     </script>
-    
   </body>
 </html>

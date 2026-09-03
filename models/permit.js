@@ -43,9 +43,35 @@ const permitSchema = new mongoose.Schema(
     },
     documents: [
       {
-        fileName: String,
-        filePath: String,
-        fileType: String,
+        fileName: {
+          type: String,
+          required: true,
+        },
+
+        fileUrl: {
+          type: String,
+          required: true,
+        },
+
+        publicId: {
+          type: String,
+          required: true,
+        },
+
+        fileType: {
+          type: String,
+          required: true,
+        },
+
+        resourceType: {
+          type: String,
+          required: true,
+        },
+
+        fileSize: {
+          type: Number,
+        },
+
         uploadDate: {
           type: Date,
           default: Date.now,
