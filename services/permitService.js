@@ -1,4 +1,4 @@
-const Permit = require("../models/Permit");
+const Permit = require("../models/permit");
 
 const { validPermit } = require("../utils/validation");
 
