@@ -32,6 +32,29 @@ header {
   animation: gradientBG 15s ease infinite;
 }
 
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 45px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #777;
+}
+
+.password-toggle:hover {
+  color: #333;
+}
+
+
 @keyframes gradientBG {
   0% {
     background-position: 0% 50%;
