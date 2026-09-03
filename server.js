@@ -20,6 +20,7 @@ const {
 dotenv.config();
 
 const app = express();
+pp.set("trust proxy", 1);
 
 // ==============================
 // DATABASE
