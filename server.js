@@ -11,6 +11,12 @@ const adminRoutes = require("./routes/adminRoutes");
 
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 
+const {
+  generalLimiter,
+  authLimiter,
+  permitLimiter,
+} = require("./middleware/rateLimitMiddleware");
+
 dotenv.config();
 
 const app = express();
@@ -40,8 +46,9 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // ==============================
 // API ROUTES
 // ==============================
-app.use("/api/auth", authRoutes);
-app.use("/api/permits", permitRoutes);
+app.use(generalLimiter);
+app.use("/api/auth",authLimiter, authRoutes);
+app.use("/api/permits",permitLimiter, permitRoutes);
 app.use("/api/admin", adminRoutes);
 
 // ==============================
